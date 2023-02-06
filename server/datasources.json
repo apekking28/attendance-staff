@@ -1,0 +1,18 @@
+{
+  "attendance": {
+    "url": "mongodb://localhost:27017/Absensi?keepAlive=true&socketTimeoutMS=3000000&connectTimeoutMS=3000000",
+    "name": "attendance",
+    "connector": "mongodb"
+  },
+  "push": {
+    "name": "push",
+    "connector": "loopback-component-push",
+    "installation": "installation",
+    "notification": "notification",
+    "application": "application"
+  },
+  "transient": {
+    "name": "transient",
+    "connector": "transient"
+  }
+}
