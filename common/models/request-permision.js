@@ -53,9 +53,22 @@ module.exports = function (RequestPermission) {
       const result = await cursor.toArray();
       await cursor.close();
 
+      // IZIN dan TIDAK dizinkan
+      let leave = 0;
+      let reject = 0;
+
+      for (const doc of result) {
+        if (doc.isApproved === true) {
+          leave++;
+        } else if (doc.isApproved === false) {
+          reject++;
+        }
+      }
       return Promise.resolve({
         message: "succsesfully get data requestPermission",
-        count: result.length,
+        leave: leave,
+        reject: reject,
+        total: result.length,
         data: result,
       });
     } catch (err) {
@@ -80,7 +93,6 @@ module.exports = function (RequestPermission) {
       if (req != null) req.setTimeout(0);
       try {
         const constraints = {
-          // roleId: { presence: true },
           id: { presence: true },
           reason: { presence: true },
           startDate: { presence: true },
@@ -212,7 +224,6 @@ module.exports = function (RequestPermission) {
 
         //NOTE: CREATE DATA ATTENDACE
         let requestPermission = await RequestPermission.findById(idRequest);
-        console.log(requestPermission);
 
         let payload = {
           staffId: requestPermission.staffId,
@@ -224,18 +235,13 @@ module.exports = function (RequestPermission) {
           checkIn: null,
         };
 
-        // let cekAttendance = await Attedance.findOne({
-        //   where: { staffId: requestPermission.staffId },
-        // });
-        // console.log(cekAttendance);
-        // if (cekAttendance) return "kehadiran sudah di proses";
         await Attedance.create(payload);
       }
 
       return Promise.resolve({
         status: 200,
         idRequest: idRequest,
-        message: "Succesfully Update RequestPermission",
+        message: "Succesfully approved RequestPermission",
       });
     } catch (err) {
       return Promise.reject(err);
@@ -270,7 +276,7 @@ module.exports = function (RequestPermission) {
 
       return Promise.resolve({
         status: 200,
-        message: "Succesfully Update RequestPermission",
+        message: "Succesfully reject RequestPermission",
       });
     } catch (err) {
       return Promise.reject(err);

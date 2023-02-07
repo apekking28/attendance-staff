@@ -19,6 +19,7 @@ module.exports = function (Staff) {
       });
       return Promise.resolve({
         message: "succsesfully get staff data",
+        count: result.length,
         data: result,
       });
     } catch (err) {

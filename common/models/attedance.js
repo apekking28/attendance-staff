@@ -143,21 +143,21 @@ module.exports = function (Attedance) {
       await cursor.close();
 
       // HADIR , TELAT , IZIN
-      let totalHadir = 0;
-      let totalTelat = 0;
-      let totalTidakHadir = 0;
-      let totalIzin = 0;
+      let present = 0;
+      let late = 0;
+      let absent = 0;
+      let leave = 0;
       for (let doc of result) {
         if (doc._id.status === "izin") {
           const diffInMs = doc.data[0].endDate - doc.data[0].startDate;
           const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
           let diff = Math.round(diffInDays);
           doc.total = diff;
-          totalIzin = diff;
+          leave = diff;
         } else if (doc._id.status === "present") {
-          totalHadir = doc.total;
+          present = doc.total;
         } else if (doc._id.status === "late") {
-          totalTelat = doc.total;
+          late = doc.total;
         }
       }
 
@@ -168,17 +168,15 @@ module.exports = function (Attedance) {
         date.getMonth() + 1,
         0
       ).getDate();
-      totalTidakHadir = Math.abs(
-        totalHadir + totalIzin + totalTelat - daysInMonth
-      );
+      absent = Math.abs(present + leave + late - daysInMonth);
 
       return Promise.resolve({
         message: "succsesfully get attendance staff",
         Name: name,
-        totalHadir: totalHadir,
-        totalTelat: totalTelat,
-        totalIzin: totalIzin,
-        totalTidakHadir: totalTidakHadir,
+        present: present,
+        late: late,
+        leave: leave,
+        absent: absent,
       });
     } catch (err) {
       return Promise.reject(err);
@@ -246,7 +244,7 @@ module.exports = function (Attedance) {
         const attendance = await Attedance.create(payload);
 
         return Promise.resolve({
-          status: "Succedfully created attedance",
+          status: "Succedfully check in",
           createdId: attendance.id,
         });
       } catch (err) {
@@ -320,7 +318,7 @@ module.exports = function (Attedance) {
         }
 
         return Promise.resolve({
-          status: "Succedfully log out",
+          status: "Succedfully check out",
           attendanceId: attendanceId,
         });
       } catch (err) {
