@@ -296,7 +296,6 @@ module.exports = function (Attedance) {
 
         let co = body.checkOut;
         let attendanceId = body.attendanceId;
-        let status;
 
         let chekAttendance = await Attedance.find({
           where: { id: attendanceId },
@@ -305,7 +304,6 @@ module.exports = function (Attedance) {
 
         const payload = {
           staffId: body.staffId,
-          status: status,
           checkOut: co,
           createdAt: new Date(),
         };
